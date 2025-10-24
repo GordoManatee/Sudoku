@@ -3,89 +3,134 @@
 #include <string>
 using namespace std;
 
-// Estructura para almacenar la informacion del jugador
+// Estructura para almacenar los datos de un jugador
 struct Jugador {
     string nombre;
-    string dificultad;
-    int tiempo; // en segundos
+    string contrasena;
+    string dificultad; // Ultima dificultad jugada
 };
 
 // Funcion para imprimir la tabla de clasificacion
-void imprimirClasificacion(const vector<Jugador>& jugadores) {
+void mostrarClasificacion(const vector<Jugador>& jugadores) {
     cout << "\n--- Tabla de Clasificacion ---\n";
+    if (jugadores.empty()) {
+        cout << "No hay jugadores registrados.\n";
+        return;
+    }
     for (const auto& j : jugadores) {
         cout << "Jugador: " << j.nombre
-             << " | Dificultad: " << j.dificultad
-             << " | Tiempo: " << j.tiempo << "s\n";
+             << " | Ultima dificultad jugada: " << j.dificultad << "\n";
     }
     cout << "-------------------------------\n";
 }
 
-// Merge utilizado en Merge Sort
-void merge(vector<Jugador>& jugadores, int izquierda, int medio, int derecha) {
-    int n1 = medio - izquierda + 1;
-    int n2 = derecha - medio;
+// Funcion para seleccionar dificultad
+void seleccionarDificultad(Jugador& jugador) {
+    int opcion;
+    cout << "\n--- Seleccion de dificultad ---\n";
+    cout << "1. Facil\n";
+    cout << "2. Media\n";
+    cout << "3. Dificil\n";
+    cout << "Selecciona una opcion: ";
+    cin >> opcion;
 
-    vector<Jugador> L(n1);
-    vector<Jugador> R(n2);
+    switch (opcion) {
+        case 1:
+            jugador.dificultad = "Facil";
+            break;
+        case 2:
+            jugador.dificultad = "Media";
+            break;
+        case 3:
+            jugador.dificultad = "Dificil";
+            break;
+        default:
+            cout << "Opcion no valida, se asigna dificultad Facil por defecto.\n";
+            jugador.dificultad = "Facil";
+    }
 
-    for (int i = 0; i < n1; i++) L[i] = jugadores[izquierda + i];
-    for (int j = 0; j < n2; j++) R[j] = jugadores[medio + 1 + j];
+    cout << "Dificultad seleccionada: " << jugador.dificultad << "\n";
+    cout << "Comenzando el juego... (proximamente aqui ira el Sudoku)\n";
+}
 
-    int i = 0, j = 0, k = izquierda;
+// Funcion para registrar un nuevo usuario
+void registrarUsuario(vector<Jugador>& jugadores) {
+    Jugador nuevo;
+    cout << "\n--- Registro de nuevo jugador ---\n";
+    cout << "Nombre de usuario: ";
+    cin >> nuevo.nombre;
 
-    while (i < n1 && j < n2) {
-        if (L[i].tiempo <= R[j].tiempo) {
-            jugadores[k] = L[i];
-            i++;
-        } else {
-            jugadores[k] = R[j];
-            j++;
+    // Verificar si el usuario ya existe
+    for (const auto& j : jugadores) {
+        if (j.nombre == nuevo.nombre) {
+            cout << "El nombre de usuario ya esta en uso. Intenta con otro.\n";
+            return;
         }
-        k++;
     }
 
-    while (i < n1) {
-        jugadores[k] = L[i];
-        i++;
-        k++;
-    }
+    cout << "Crea una contrasena: ";
+    cin >> nuevo.contrasena;
+    nuevo.dificultad = "Sin definir";
 
-    while (j < n2) {
-        jugadores[k] = R[j];
-        j++;
-        k++;
-    }
+    jugadores.push_back(nuevo);
+    cout << "Usuario registrado exitosamente.\n";
+
+    // Permitir jugar despues de crear usuario
+    seleccionarDificultad(jugadores.back());
 }
 
-// Implementacion de Merge Sort
-void mergeSort(vector<Jugador>& jugadores, int izquierda, int derecha) {
-    if (izquierda < derecha) {
-        int medio = izquierda + (derecha - izquierda) / 2;
-        mergeSort(jugadores, izquierda, medio);
-        mergeSort(jugadores, medio + 1, derecha);
-        merge(jugadores, izquierda, medio, derecha);
+// Funcion para iniciar sesion con un usuario existente
+void iniciarSesion(vector<Jugador>& jugadores) {
+    string nombre, contrasena;
+    cout << "\n--- Iniciar sesion ---\n";
+    cout << "Nombre de usuario: ";
+    cin >> nombre;
+    cout << "Contrasena: ";
+    cin >> contrasena;
+
+    for (auto& j : jugadores) {
+        if (j.nombre == nombre && j.contrasena == contrasena) {
+            cout << "Bienvenido, " << j.nombre << "! Has iniciado sesion correctamente.\n";
+            seleccionarDificultad(j);
+            return;
+        }
     }
+
+    cout << "Usuario o contrasena incorrectos.\n";
 }
 
+// Programa principal
 int main() {
-    // Datos de ejemplo
-    vector<Jugador> jugadores = {
-        {"Juan", "Facil", 120},
-        {"Mar", "Dificil", 340},
-        {"Paris", "Medio", 220},
-        {"Carlos", "Facil", 95},
-        {"Luis", "Dificil", 410}
-    };
+    vector<Jugador> jugadores;
+    int opcion;
 
-    cout << "Clasificacion ORIGINAL:";
-    imprimirClasificacion(jugadores);
+    do {
+        cout << "\n===== MENU PRINCIPAL =====\n";
+        cout << "1. Registrar nuevo jugador\n";
+        cout << "2. Iniciar sesion\n";
+        cout << "3. Ver tabla de clasificacion\n";
+        cout << "4. Salir\n";
+        cout << "Selecciona una opcion: ";
+        cin >> opcion;
 
-    // Ordenar por tiempo usando Merge Sort
-    mergeSort(jugadores, 0, jugadores.size() - 1);
+        switch (opcion) {
+            case 1:
+                registrarUsuario(jugadores);
+                break;
+            case 2:
+                iniciarSesion(jugadores);
+                break;
+            case 3:
+                mostrarClasificacion(jugadores);
+                break;
+            case 4:
+                cout << "Saliendo del programa...\n";
+                break;
+            default:
+                cout << "Opcion no valida.\n";
+        }
 
-    cout << "\nClasificacion ORDENADA por tiempo:";
-    imprimirClasificacion(jugadores);
+    } while (opcion != 4);
 
     return 0;
 }
