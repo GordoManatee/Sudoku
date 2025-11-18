@@ -1,133 +1,74 @@
 #include <iostream>
-#include <vector>
-#include <string>
+#include "ListaJugadores.h"
 using namespace std;
 
-// Estructura para almacenar los datos de un jugador
-struct Jugador {
-    string nombre;
-    string contrasena;
-    string dificultad; // Ultima dificultad jugada
-};
+void seleccionarDificultad(Jugador& j) {
+    int opc;
+    cout << "\nSelecciona dificultad:\n1. Facil\n2. Media\n3. Dificil\n> ";
+    cin >> opc;
 
-// Funcion para imprimir la tabla de clasificacion
-void mostrarClasificacion(const vector<Jugador>& jugadores) {
-    cout << "\n--- Tabla de Clasificacion ---\n";
-    if (jugadores.empty()) {
-        cout << "No hay jugadores registrados.\n";
-        return;
+    switch (opc) {
+        case 1: j.ultimaDificultad = "Facil"; break;
+        case 2: j.ultimaDificultad = "Media"; break;
+        case 3: j.ultimaDificultad = "Dificil"; break;
+        default: j.ultimaDificultad = "Facil"; break;
     }
-    for (const auto& j : jugadores) {
-        cout << "Jugador: " << j.nombre
-             << " | Ultima dificultad jugada: " << j.dificultad << "\n";
-    }
-    cout << "-------------------------------\n";
+
+    j.partidas++;
+    cout << "\nIniciando juego... (Sudoku próximamente)\n";
 }
 
-// Funcion para seleccionar dificultad
-void seleccionarDificultad(Jugador& jugador) {
-    int opcion;
-    cout << "\n--- Seleccion de dificultad ---\n";
-    cout << "1. Facil\n";
-    cout << "2. Media\n";
-    cout << "3. Dificil\n";
-    cout << "Selecciona una opcion: ";
-    cin >> opcion;
-
-    switch (opcion) {
-        case 1:
-            jugador.dificultad = "Facil";
-            break;
-        case 2:
-            jugador.dificultad = "Media";
-            break;
-        case 3:
-            jugador.dificultad = "Dificil";
-            break;
-        default:
-            cout << "Opcion no valida, se asigna dificultad Facil por defecto.\n";
-            jugador.dificultad = "Facil";
-    }
-
-    cout << "Dificultad seleccionada: " << jugador.dificultad << "\n";
-    cout << "Comenzando el juego... (proximamente aqui ira el Sudoku)\n";
-}
-
-// Funcion para registrar un nuevo usuario
-void registrarUsuario(vector<Jugador>& jugadores) {
-    Jugador nuevo;
-    cout << "\n--- Registro de nuevo jugador ---\n";
-    cout << "Nombre de usuario: ";
-    cin >> nuevo.nombre;
-
-    // Verificar si el usuario ya existe
-    for (const auto& j : jugadores) {
-        if (j.nombre == nuevo.nombre) {
-            cout << "El nombre de usuario ya esta en uso. Intenta con otro.\n";
-            return;
-        }
-    }
-
-    cout << "Crea una contrasena: ";
-    cin >> nuevo.contrasena;
-    nuevo.dificultad = "Sin definir";
-
-    jugadores.push_back(nuevo);
-    cout << "Usuario registrado exitosamente.\n";
-
-    // Permitir jugar despues de crear usuario
-    seleccionarDificultad(jugadores.back());
-}
-
-// Funcion para iniciar sesion con un usuario existente
-void iniciarSesion(vector<Jugador>& jugadores) {
-    string nombre, contrasena;
-    cout << "\n--- Iniciar sesion ---\n";
-    cout << "Nombre de usuario: ";
-    cin >> nombre;
-    cout << "Contrasena: ";
-    cin >> contrasena;
-
-    for (auto& j : jugadores) {
-        if (j.nombre == nombre && j.contrasena == contrasena) {
-            cout << "Bienvenido, " << j.nombre << "! Has iniciado sesion correctamente.\n";
-            seleccionarDificultad(j);
-            return;
-        }
-    }
-
-    cout << "Usuario o contrasena incorrectos.\n";
-}
-
-// Programa principal
 int main() {
-    vector<Jugador> jugadores;
-    int opcion;
+    ListaJugadores lista;
+    lista.cargarDesdeArchivo("jugadores.txt");
 
+    int opcion;
     do {
         cout << "\n===== MENU PRINCIPAL =====\n";
-        cout << "1. Registrar nuevo jugador\n";
+        cout << "1. Registrar usuario\n";
         cout << "2. Iniciar sesion\n";
         cout << "3. Ver tabla de clasificacion\n";
         cout << "4. Salir\n";
-        cout << "Selecciona una opcion: ";
+        cout << "> ";
         cin >> opcion;
 
         switch (opcion) {
-            case 1:
-                registrarUsuario(jugadores);
+
+            case 1: {
+                Jugador nuevo;
+                cout << "\nNombre: "; cin >> nuevo.nombre;
+                cout << "Contrasena: "; cin >> nuevo.contrasena;
+                lista.insertar(nuevo);
+                cout << "Usuario registrado.\n";
                 break;
-            case 2:
-                iniciarSesion(jugadores);
+            }
+
+            case 2: {
+                string name, pass;
+                cout << "\nUsuario: "; cin >> name;
+                cout << "Contrasena: "; cin >> pass;
+
+                Nodo* n = lista.buscar(name);
+                if (n && n->jugador.contrasena == pass) {
+                    cout << "Bienvenido " << name << "!\n";
+                    seleccionarDificultad(n->jugador);
+                } else {
+                    cout << "Datos incorrectos.\n";
+                }
                 break;
+            }
+
             case 3:
-                mostrarClasificacion(jugadores);
+                lista.mostrarClasificacion();
                 break;
+
             case 4:
-                cout << "Saliendo del programa...\n";
+                lista.guardarEnArchivo("jugadores.txt");
+                cout << "\nDatos guardados. Saliendo...\n";
                 break;
+
             default:
-                cout << "Opcion no valida.\n";
+                cout << "Opción no válida.\n";
         }
 
     } while (opcion != 4);

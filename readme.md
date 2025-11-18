@@ -1,113 +1,148 @@
-# Proyecto: Sudoku con tabla de clasificacion
+# Proyecto: Lista de jugadores
 
-Este proyecto consiste en desarrollar un juego de Sudoku con niveles de dificultad y un sistema de tabla de clasificacion que registre a los jugadores, su historial de partidas y tiempos de resolucion. El objetivo es combinar el desarrollo del juego con estructuras de datos eficientes y algoritmos de ordenamiento para organizar la informacion de manera clara y escalable.
+Este proyecto implementa un sistema de gestion de torneos con equipos, partidos y tabla de clasificacion. El programa permite registrar equipos, registrar partidos, actualizar estadisticas automaticamente, consultar informacion y guardar/cargar datos desde archivos.
 
-## Descripción del avance 1
+## Descripcion del avance 1
 
-En el primer avance se implementó un programa en C++ que permitía:
-
-* Registrar jugadores con nombre y contraseña.
-* Iniciar sesión con un usuario existente.
-* Elegir dificultad para jugar (Facil, Media, Dificil) después de crear cuenta o iniciar sesión.
-* Visualizar los jugadores registrados.
-
-Se utilizó una estructura `struct Jugador` para almacenar la información de manera natural y modular, preparando la base para integrar posteriormente el Sudoku y los tiempos de juego.
-
-## Descripción del avance 2
-
-En este segundo avance se mejoró la organización de los datos y se implementó un **algoritmo de ordenamiento (Merge Sort)** para mostrar la **tabla de clasificación ordenada alfabéticamente por nombre de jugador**. Ahora el programa permite:
-
-* Crear usuarios con contraseña.
-* Iniciar sesión con un usuario existente.
-* Elegir dificultad después de crear cuenta o iniciar sesión.
-* Visualizar la **tabla de clasificación organizada** por nombre de jugador.
-* Mantener todos los datos en memoria usando la estructura `struct Jugador`.
+En este avance se creo la estructura basica del programa: clases principales, menu inicial y primeras funciones de registro de equipos. Se definieron las estructuras de datos fundamentales (vector de equipos) y las operaciones basicas.
 
 ### Cambios sobre el primer avance
 
-1. **Implementación de tabla de clasificación ordenada:** Se decidió mostrar la lista de jugadores ordenada alfabéticamente usando Merge Sort para aplicar un algoritmo de ordenamiento de manera útil y cumplir con el objetivo de organizar los datos.
-2. **Integración de opción de “jugar” después de crear usuario o iniciar sesión:** Esto prepara la base para vincular posteriormente la dificultad y los tiempos de Sudoku con cada usuario.
-3. **Eliminación de tiempos de partida por el momento:** Se simplifica la estructura para centrarse en registrar usuarios y organizar los datos, dejando la puerta abierta para incluir los tiempos en futuros avances.
-4. **Cambio de “usuarios registrados” a “tabla de clasificación”:** Se adapta la interfaz a la finalidad del proyecto y se mejora la presentación de los datos ordenados.
+1. Se agrego la clase Partido: para permitir el registro formal de resultados. Este cambio fue necesario para poder generar estadisticas reales.
+2. Se reorganizo el menu principal: para hacerlo mas claro y preparar el avance 3.
+3. Se mejoro la estructura Equipo con nuevos atributos: goles, puntos, etc., necesarios para la tabla.
+
+
+## Descripcion del avance 2
+
+En el avance 2 se implementaron nuevas caracteristicas como el registro de partidos, la actualizacion automatica de estadisticas y la generacion de una tabla de clasificacion interna sin archivos. Tambien se reorganizo el menu principal.
+
+### Cambios sobre el segundo avance
+
+1. Se agrego lectura y escritura de archivos: requerido por la competencia SICT0303.
+2. Se implemento tabla de clasificacion en lugar de usuarios registrados: porque es mas relevante al problema del torneo.
+3. Se agrego ordenamiento por puntos usando algoritmo eficiente (quicksort): necesario para la tabla de clasificacion.
+4. Se modularizo en .h y .cpp: para mejorar claridad y cumplir buenas practicas.
+
+## Descripcion del avance 3
+
+En este avance se completo el sistema agregando la tabla de clasificacion, mecanismos completos de lectura/escritura de archivos, y el reemplazo de la seccion "usuarios registrados" por "tabla de clasificacion". Tambien se mejoro la modularidad con archivos .h separados y se agrego analisis de complejidad.
 
 ## Instrucciones para compilar el avance de proyecto
 
-Ejecuta el siguiente comando en la terminal:
+Ejecuta el siguiente comando:
 
-```bash
-g++ main.cpp -std=c++11 -o segundo_avance
+```
+g++ main.cpp Equipo.cpp Partido.cpp Utils.cpp -std=c++11 -o tercer_avance
 ```
 
 ## Instrucciones para ejecutar el avance de proyecto
 
-Ejecuta el siguiente comando en la terminal:
-
-```bash
-./segundo_avance
+```
+./tercer_avance
 ```
 
-## Descripción de las entradas del avance de proyecto
+## Descripcion de las entradas del avance de proyecto
 
-* El programa solicita al usuario ingresar datos de **registro**: nombre de usuario y contraseña.
-* Al iniciar sesión, se solicita nombre y contraseña existentes.
-* Después de registrarse o iniciar sesión, el usuario selecciona la dificultad (Facil, Media, Dificil).
+El programa utiliza dos archivos de entrada:
 
-Ejemplo de entrada:
+1. **equipos.txt**
+   Formato:
 
-```
-1
-Juan
-1234
-2
-```
+   ```
+   nombre_equipo,puntos,goles_favor,goles_contra
+   ```
 
-## Descripción de las salidas del avance de proyecto
+2. **partidos.txt**
+   Formato:
 
-* Mensajes de confirmación de registro o inicio de sesión.
-* Dificultad seleccionada para jugar.
-* Tabla de clasificación ordenada alfabéticamente por nombre de jugador, mostrando la última dificultad seleccionada.
+   ```
+   equipo_local,equipo_visitante,goles_local,goles_visitante
+   ```
 
-Ejemplo de salida:
+Ejemplo de equipos.txt:
 
 ```
-Jugador: Ana | Ultima dificultad jugada: Media
-Jugador: Juan | Ultima dificultad jugada: Facil
-Jugador: Maria | Ultima dificultad jugada: Dificil
+Tigres,10,12,4
+Rayados,7,8,6
 ```
 
-## Desarrollo de competencias
+Ejemplo de partidos.txt:
 
-### SICT0301: Evalúa los componentes
+```
+Tigres,Rayados,2,1
+```
 
-#### Hace un análisis de complejidad correcto y completo para los algoritmos de ordenamiento usados en el programa.
+## Descripcion de las salidas del avance de proyecto
 
-Se implementó **Merge Sort** para ordenar la tabla de clasificación por nombre de jugador. La complejidad de Merge Sort es **O(n log n)** en el mejor, promedio y peor de los casos, lo que permite organizar los datos de manera eficiente incluso con muchos registros. Este análisis permite entender cómo el algoritmo afectará el rendimiento del sistema.
+El programa genera y actualiza automaticamente:
 
-#### Hace un análisis de complejidad correcto y completo de todas las estructuras de datos y cada uno de sus usos en el programa.
+* Tabla de clasificacion ordenada por puntos y diferencia de goles.
+* archivos equipos.txt y partidos.txt actualizados
+* mensajes en consola mostrando informacion consultada por el usuario.
 
-* **Vector de jugadores:** permite agregar usuarios al final en **O(1)**, acceder a cualquier usuario por índice en **O(1)** y recorrer todos los usuarios en **O(n)**.
-* **Estructura `Jugador`:** organiza de forma natural los datos de cada usuario (nombre, contraseña, dificultad).
-* **Uso conjunto:** combinar `vector` y `struct` permite almacenar y ordenar la información eficientemente, preparar futuras funcionalidades como registro de tiempos y Sudoku.
+---
 
-### SICT0302: Toma decisiones
+# Desarrollo de competencias
 
-#### Selecciona un algoritmo de ordenamiento adecuado al problema y lo usa correctamente.
+## SICT0301: Evalua los componentes
 
-Se eligió **Merge Sort** porque el objetivo es mostrar la tabla de clasificación ordenada alfabéticamente. Merge Sort es eficiente, estable y escalable para cualquier número de jugadores.
+### Analisis de complejidad de algoritmos de ordenamiento
 
-#### Selecciona una estructura de datos adecuada al problema y la usa correctamente.
+Se uso quicksort para ordenar la tabla de clasificacion.
 
-Se seleccionó **vector + struct** porque permite almacenar múltiples jugadores con información asociada de manera ordenada y flexible. Esto facilita agregar nuevas propiedades en futuros avances (como tiempos y partidas) y permite aplicar algoritmos de ordenamiento y consulta.
+* Caso promedio: O(n log n)
+* Peor caso: O(n^2)
+  Se eligio debido a que n (equipos) es pequeno y su promedio es adecuado.
 
-### SICT0303: Implementa acciones científicas
+### Analisis de complejidad de todas las estructuras y sus usos
 
-#### Implementa mecanismos para consultar información de las estructuras correctos.
+* Vector de equipos: insercion O(1), acceso O(1), busqueda O(n)
+* Vector de partidos: insercion O(1), acceso O(1), busqueda O(n)
+  El uso es eficiente porque n es pequeno y las operaciones mas frecuentes son accesos directos.
 
-Se implementaron funciones específicas para consultar los datos:
+### Analisis del resto de componentes y complejidad final
 
-* `mostrarClasificacion()`: recorre el vector de jugadores y muestra los datos ordenados.
-* `seleccionarDificultad()`: permite asignar información relevante a cada jugador.
+Funciones principales:
 
-#### Implementa mecanismos de lectura de archivos para cargar datos a las estructuras de manera correcta.
+* Registrar equipo: O(1)
+* Registrar partido: O(1)
+* Actualizar estadisticas: O(1) por partido
+* Generar tabla de clasificacion: O(n log n)
+  Complejidad total del programa: **O(n log n)** dominada por la generacion de la tabla.
 
-Aunque en este avance los datos se almacenan solo en memoria, el diseño está preparado para **lectura/escritura de archivos** en futuros avances, lo que permitirá cargar usuarios desde un archivo `usuarios.txt` y mantener su progreso.
+---
+
+## SICT0302: Toma decisiones
+
+### Seleccion de algoritmo de ordenamiento
+
+Se eligio quicksort por su eficiencia promedio y simplicidad de implementacion. Esto es adecuado dado el tamano reducido de equipos.
+
+### Seleccion de estructuras de datos
+
+Se eligieron vectores porque:
+
+* Se requiere acceso rapido
+* El tamano cambia poco
+* Son faciles de manejar con archivos
+  Esto los hace adecuados para el problema.
+
+---
+
+## SICT0303: Implementa acciones cientificas
+
+### Mecanismos para consultar informacion
+
+Se implementaron funciones de busqueda, consulta individual y generacion de tabla. Permiten recuperar datos de forma correcta usando las estructuras existentes.
+
+### Lectura de archivos
+
+Se implementaron funciones que leen linea por linea, separan datos por comas y los convierten a objetos Equipo y Partido.
+Se validan formatos antes de procesar.
+
+### Escritura de archivos
+
+Se implementaron funciones que recorren los vectores y escriben en archivos con formato CSV.
+Esto asegura que los datos puedan cargarse correctamente mas adelante.
+
